@@ -1,0 +1,748 @@
+{{!--
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> --}}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select-locale-all.min.js"></script>
+
+<style>
+    table {
+        width: 716px;
+        /* 140px * 5 column + 16px scrollbar width */
+        border-spacing: 0;
+    }
+
+    tbody,
+    thead tr {
+        display: block;
+    }
+
+    tbody {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    tbody td,
+    thead th {
+        width: 100%;
+    }
+
+    thead th:last-child {
+        width: 100%;
+        /* 140px + 16px scrollbar width */
+    }
+</style>
+<style>
+    select {
+        width: 100%;
+    }
+
+    .form-check,
+    label {
+        font-size: 14px;
+        line-height: 1.42857;
+        color: #ffffff;
+        font-weight: 400;
+    }
+
+    .select2-container {
+        box-sizing: border-box;
+        display: inline-block;
+        margin: 0;
+        position: relative;
+        vertical-align: middle;
+        width: inherit !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-8">
+        <h3>Actividad por Verificador</h2>
+    </div>
+    <div class="col-md-4">
+        <a type="button" href="/operativo" class="btn btn-warning pull-right">Volver</a>
+    </div>
+</div>
+{{#with errors}}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="alert-text">
+                        <h2>ERROR</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/with}}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-white bg-dark">
+                <h4>Filtro: <strong>{{{filtro}}}</strong></h4>
+            </div>
+            <div class="card-body">
+                <form action="/operativo/actividad" method="POST">
+                    <div class="form-group">
+                        <label class="control-label">Rango de Fechas</label>
+                        <div id="reportrange"
+                            style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                            <i class="fa fa-calendar"></i>&nbsp;
+                            <span></span> <i class="fa fa-caret-down"></i>
+                            <input type="hidden" id="txtFechas" name="fechas" value=""></input>
+                        </div>
+                    </div>
+
+                    <div id="btnGrupo" class="btn-group d-flex justify-content-center" data-toggle="buttons">
+                        <label id="checkZona" class="btn btn-primary form-check-label">
+                            <div class="form-check form-check-radio">
+                                <input id="inputCheckZona" class="form-check-input" type="radio" autocomplete="off">
+                                ZONA
+                            </div>
+                        </label>
+                        <label id="checkDistrito" class="btn btn-primary form-check-label">
+                            <div class="form-check form-check-radio">
+                                <input id="inputCheckDistrito" class="form-check-input" type="radio" autocomplete="off">
+                                DISTRITO
+                            </div>
+                        </label>
+                        <label id="checkCuadrante" class="btn btn-primary form-check-label">
+                            <div class="form-check form-check-radio">
+                                <input id="inputCheckCuadrante" class="form-check-input" type="radio"
+                                    autocomplete="off"> CUADRANTE
+                            </div>
+                        </label>
+                    </div>
+
+                    <div id="divCboZona" class="form-group col-md-12" hidden>
+                        <label class="control-label">Zona</label>
+                        <select id="cboZona" class="form-control">
+                            {{#each cboZona}}
+                            <option value="{{this.dataValues.ZonaId}}">
+                                {{this.dataValues.Nombre}}
+                            </option>
+                            {{/each}}
+                        </select>
+
+
+                        <input type="hidden" id="inputZona" name="zona"></input>
+
+                    </div>
+
+                    <div id="divCboDistrito" class="form-group col-md-12" hidden>
+                        <label class="control-label">Distrito</label>
+                        <select id="cboDistrito" class="form-control">
+                            {{#each cboDistrito}}
+                            <option value="{{this.dataValues.DistritoId}}">
+                                {{this.dataValues.Nombre}}
+                            </option>
+                            {{/each}}
+                        </select>
+
+
+                        <input type="hidden" id="inputDistrito" name="distrito"></input>
+
+                    </div>
+
+                    <div id="divCboCuadrante" class="form-group col-md-12" hidden>
+                        <label class="control-label">Cuadrante</label>
+                        <select id="cboCuadrante" class="form-control">
+                            {{#each cboCuadrante}}
+                            <option value="{{this.dataValues.CuadranteBarrialId}}">
+                                {{this.dataValues.Descripcion}}
+                            </option>
+                            {{/each}}
+                        </select>
+
+
+                        <input type="hidden" id="inputCuadrante" name="cuadrante"></input>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-dark btn-block">
+                        Buscar
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    {{#if ConResultados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Resultados</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {{#with tableRevisado}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-info"><strong>Revisados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with tableACorregir}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-primary"><strong>A Corregir: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with tableConfirmados}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-success"><strong>Confirmados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with tableAnulado}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-danger"><strong>Anulados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with tableGenerados}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-warning"><strong>Generados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                </div>
+            </div>
+            <div class="card-footer">
+                <form id="form" target="_blank" action="/operativo/actividad/reporte" method="POST"
+                    style="width: 100%;">
+                    <div class="form-group row">
+                        <label class="col-md-6">
+                            Columnas
+                        </label>
+                        <input type="hidden" name="filtro" id="inputFiltro" value="{{filtro}}">
+                        <div class="col-md-12">
+                            <select id="cboMultiple" required name="multipleSelec" multiple="multiple">
+                                <optgroup label="Columnas de Actuaciones">
+                                    {{#each columnasActuaciones}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                {{!-- <optgroup label="Columnas de Hechos">
+                                    {{#each columnasDelitos}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Conflictos">
+                                    {{#each columnasConflictos}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Demandas">
+                                    {{#each columnasDemandas}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Personas">
+                                    {{#each columnasPersonas}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup> --}}
+                            </select>
+
+                            <input type="hidden" id="inputFechas" name="fechas" value="{{fechas}}"></input>
+                            <input type="hidden" id="inputZona" name="zona" value="{{zona}}"></input>
+                            <input type="hidden" id="inputDistrito" name="distrito" value="{{distrito}}"></input>
+                            <input type="hidden" id="inputCuadrante" name="cuadrante" value="{{cuadrante}}"></input>
+                        </div>
+                    </div>
+
+                    <div class=" d-flex justify-content-center">
+                        <button id="btnReporte" target="_blank" type="submit" class="btn btn-success">Descargar Total
+                            Excel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {{else}}
+    {{#if esBuscado}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="alert-text">
+                        <h2>Sin resultados</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{/if}}
+
+</div>
+
+<div class="row">
+    {{#with tableRevisado}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>A Revisar: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Fecha: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with tableACorregir}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-primary">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>A Corregir: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Fecha: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with tableConfirmados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <div class="alert-header">
+                        <h3>Confirmados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Fecha: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with tableAnulado}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="alert-header">
+                        <h3>Confirmados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Fecha: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with tableGenerados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <div class="alert-header">
+                        <h3>Confirmados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Fecha: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+</div>
+
+
+
+<script type="text/javascript">
+    $(function () {
+
+        /*$("#btnieia").click(function(){
+            var zona = $("#checkZona").hasClass('active');
+            var distrito = $("#checkDistrito").hasClass('active');
+            var cuadrante = $("#checkCuadrante").hasClass('active');
+
+            console.log(zona);console.log(distrito);console.log(cuadrante);
+        });*/
+
+        /*$("#btnGrupo").on('click', function(event){
+            event.preventDefault();
+            var zona = $("#checkZona").hasClass('active');
+            var distrito = $("#checkDistrito").hasClass('active');
+            var cuadrante = $("#checkCuadrante").hasClass('active');
+            
+            console.log(zona);console.log(distrito);console.log(cuadrante);
+
+        });*/
+
+        $('#inputCheckZona').on('click', function () {
+            var estado = $(this).closest('label').hasClass('active');
+            if (estado) {
+                $('#divCboZona').removeAttr('hidden');
+                $('#divCboDistrito').attr('hidden', 'hidden');
+                $('#divCboCuadrante').attr('hidden', 'hidden');
+                $("#cboDistrito").prop("selectedIndex", 0);
+                $("#cboCuadrante").prop("selectedIndex", 0);
+                $('#inputZona').val($('#cboZona').val());
+                $('#inputDistrito').val('');
+                $('#inputCuadrante').val('');
+            }
+        });
+        $('#inputCheckDistrito').on('click', function () {
+            var estado = $(this).closest('label').hasClass('active');
+            if (estado) {
+                console.log('es tru');
+                $('#divCboDistrito').removeAttr('hidden');
+                $('#divCboZona').attr('hidden', 'hidden');
+                $('#divCboCuadrante').attr('hidden', 'hidden');
+                $("#cboZona").prop("selectedIndex", 0);
+                $("#cboCuadrante").prop("selectedIndex", 0);
+                $('#inputDistrito').val($('#cboDistrito').val());
+                $('#inputZona').val('');
+                $('#inputCuadrante').val('');
+            }
+        });
+        $('#inputCheckCuadrante').on('click', function () {
+            var estado = $(this).closest('label').hasClass('active');
+            if (estado) {
+                $('#divCboCuadrante').removeAttr('hidden');
+                $('#divCboZona').attr('hidden', 'hidden');
+                $('#divCboDistrito').attr('hidden', 'hidden');
+                $("#cboZona").prop("selectedIndex", 0);
+                $("#cboDistrito").prop("selectedIndex", 0);
+                $('#inputCuadrante').val($('#cboCuadrante').val());
+                $('#inputZona').val('');
+                $('#inputDistrito').val('');
+            }
+        });
+
+
+        $('#cboZona').change(function () {
+            $('#inputZona').val($(this).val());
+        });
+
+        $('#cboDistrito').change(function () {
+            $('#inputDistrito').val($(this).val());
+        });
+
+        $('#cboCuadrante').change(function () {
+            $('#inputCuadrante').val($(this).val());
+        });
+
+        moment.locale('es');
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+            console.log('cambio');
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            $('#txtFechas').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+        }
+
+
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+
+            ranges: {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 Días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 Días': [moment().subtract(29, 'days'), moment()],
+                'Este Mes': [moment().startOf('month'), moment().endOf('month')],
+                'Último Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "De",
+                "toLabel": "Até",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mier",
+                    "Jue",
+                    "Vie",
+                    "Sáb"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 0
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
+
+    function activar(tipo) {
+        console.log(tipo)
+        var estado = $("#check" + tipo).hasClass('active');
+        console.log(estado);
+        /*var zona = $("#checkZona").hasClass('active');
+        var distrito = $("#checkDistrito").hasClass('active');
+        var cuadrante = $("#checkCuadrante").hasClass('active');
+
+        console.log(zona); console.log(distrito); console.log(cuadrante);*/
+    }
+
+    $(document).ready(function () {
+        var UsuarioIdSelected = $('#cboUsuario option').filter(':selected').val();
+        $('#inputUsuario').val(UsuarioIdSelected);
+
+        $('#cboMultiple').multipleSelect({
+            multiple: true,
+            multipleWidth: 300,
+            maxHeight: 740,
+            locale: "es-ES"
+        });
+
+
+
+    })
+</script>

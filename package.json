@@ -1,0 +1,37 @@
+{
+    "name": "ReportesBarrial",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dbScafolld": "sequelize-auto -h 10.113.16.54 -d BaseDatosPrueba -u usuarioPrueba -x passPrueba -p 1433  --dialect mssql -o './src/models' ",
+        "dev": "nodemon src/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "connect-flash": "^0.1.1",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-handlebars": "^5.3.0",
+        "express-session": "^1.17.1",
+        "handlebars": "^4.7.7",
+        "ldap-authentication": "^2.2.7",
+        "ldapjs": "^2.2.4",
+        "method-override": "^3.0.0",
+        "moment": "^2.29.1",
+        "mssql": "^6.3.1",
+        "nodemon": "^2.0.7",
+        "passport": "^0.4.1",
+        "passport-local": "^1.0.0",
+        "request": "^2.88.2",
+        "sequelize": "^6.6.2",
+        "sequelize-auto": "^0.8.2",
+        "tedious": "^11.0.6"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    }
+}

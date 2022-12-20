@@ -1,0 +1,594 @@
+{{!--
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> --}}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select-locale-all.min.js"></script>
+
+<style>
+    table {
+        width: 716px;
+        /* 140px * 5 column + 16px scrollbar width */
+        border-spacing: 0;
+    }
+
+    tbody,
+    thead tr {
+        display: block;
+    }
+
+    tbody {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    tbody td,
+    thead th {
+        width: 100%;
+    }
+
+    thead th:last-child {
+        width: 100%;
+        /* 140px + 16px scrollbar width */
+    }
+</style>
+<style>
+    select {
+        width: 100%;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-8">
+        <h3>Actividad por Cargador / Gestor</h2>
+    </div>
+    <div class="col-md-4">
+        <a type="button" href="/gestion" class="btn btn-warning pull-right">Volver</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header text-white bg-purple mb-3">
+                <h4>Filtro: <strong>{{{filtro}}}</strong></h4>
+            </div>
+            <div class="card-body ">
+                <form action="/gestion/auditoria" method="POST">
+                    <div class="form-group">
+                        <label class="control-label">Rango de Fechas</label>
+                        <div id="reportrange"
+                            style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                            <i class="fa fa-calendar"></i>&nbsp;
+                            <span></span> <i class="fa fa-caret-down"></i>
+                            <input type="hidden" id="txtFechas" name="fechas" value=""></input>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Usuario</label>
+
+                        <select id="cboUsuario" class="form-control js-example-basic-single">
+                            {{#each cboUsuarios}}
+                            <option value="{{this.dataValues.UsuarioId}}">
+                                {{this.dataValues.UsuarioRed}} {{this.dataValues.Nombre}} {{this.dataValues.Apellido}}
+                            </option>
+                            {{/each}}
+                        </select>
+
+
+                        <input type="hidden" id="inputUsuario" name="usuario"></input>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary btn-block">
+                        Buscar
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    {{#if conResultados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><strong>Actuaciones que el usuario Generó y están en los siguientes estados: </strong></h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {{#with confirmados}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-success"><strong>Confirmados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with anulados}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-danger"><strong>Anulados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with generados}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-warning"><strong>Generados: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with revisar}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-info"><strong>A Revisar: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                    {{#with corregir}}
+                    <div class="col-sm-6 text-center">
+                        <h5 class="text-dark"><strong>A Corregir: {{this.length}}</strong></h5>
+                    </div>
+                    {{/with}}
+                </div>
+            </div>
+            <div class="card-footer">
+                <form id="form" target="_blank" action="/gestion/auditoria/reporte" method="POST" style="width: 100%;">
+                    <div class="form-group row">
+                        <label class="col-md-6">
+                            Columnas
+                        </label>
+                        <input type="hidden" name="filtro" id="inputFiltro" value="{{filtro}}">
+                        <div class="col-md-12">
+                            <select id="cboMultiple" required name="multipleSelec" multiple="multiple">
+                                <optgroup label="Columnas de Actuaciones">
+                                    {{#each columnasActuaciones}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                {{!-- <optgroup label="Columnas de Hechos">
+                                    {{#each columnasDelitos}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Conflictos">
+                                    {{#each columnasConflictos}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Demandas">
+                                    {{#each columnasDemandas}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup>
+                                <optgroup label="Columnas de Personas">
+                                    {{#each columnasPersonas}}
+                                    <option value="{{this.dataValues.Campo}}">
+                                        {{this.dataValues.Label}}
+                                    </option>
+                                    {{/each}}
+
+                                </optgroup> --}}
+                            </select>
+                            <input type="hidden" id="inputUsuarioId" name="UsuarioId" value="{{UsuarioId}}"></input>
+                            <input type="hidden" id="inputFechas" name="fechas" value="{{fechas}}"></input>
+                        </div>
+                    </div>
+
+                    <div class=" d-flex justify-content-center">
+                        <button id="btnReporte" target="_blank" type="submit" class="btn btn-success">Descargar Total
+                            Excel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {{else}}
+    {{#if esBuscado}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="alert-text">
+                        <h2>Sin resultados</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{/if}}
+
+</div>
+
+<div class="row">
+    {{#with revisar}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>A Revisar: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with corregir}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-primary">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>A Corregir: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with confirmados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>Confirmados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    {{#with anulados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="alert-header">
+                        <h3>Anulados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    {{/with}}
+    {{#with generados}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <div class="alert-icon">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="alert-header">
+                        <h3>Generados: <strong>{{this.length}}</strong></h3>
+                    </div>
+                    <hr>
+                    <div class="alert-text">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="datatableEmpty" style="width: 100%; height: 650px; overflow-y: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        {{#each this}}
+                                        <tr>
+                                            <th>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h5>Actuación Id: <strong>{{dataValues.ActuacionId}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.NumeroCuadrante}}</strong>
+                                                        </h5>
+                                                        <h5>Cuadrante: <strong>{{dataValues.FechaAsentamiento}}</strong>
+                                                        </h5>
+                                                        <h5>Origen:
+                                                            <strong>{{dataValues.Origen.dataValues.Nombre}}</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </th>
+                                        </tr>
+                                        {{else}}
+                                        <tr>
+                                            <th>Sin datos</th>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    {{/with}}
+</div>
+
+
+
+<script type="text/javascript">
+    $(function () {
+
+
+
+        $('#cboUsuario').change(function () {
+            $('#inputUsuario').val($(this).val());
+        });
+
+        moment.locale('es');
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+            console.log('cambio');
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            $('#txtFechas').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+        }
+
+
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+
+            ranges: {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 Días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 Días': [moment().subtract(29, 'days'), moment()],
+                'Este Mes': [moment().startOf('month'), moment().endOf('month')],
+                'Último Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "De",
+                "toLabel": "Até",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mier",
+                    "Jue",
+                    "Vie",
+                    "Sáb"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 0
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
+
+    $(document).ready(function () {
+        var UsuarioIdSelected = $('#cboUsuario option').filter(':selected').val();
+        $('#inputUsuario').val(UsuarioIdSelected);
+
+        $('#cboMultiple').multipleSelect({
+            multiple: true,
+            multipleWidth: 300,
+            maxHeight: 740,
+            locale: "es-ES"
+        });
+
+
+    })
+</script>
